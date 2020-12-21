@@ -1,8 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-const Home = () => import(`./views/Home.vue`);
-const Contact = () => import(`./views/Contact.vue`);
-const NotFound = () => import(`./views/NotFound.vue`);
+const Home = () => import('./views/Home.vue');
+const Contact = () => import('./views/Contact.vue');
+const NotFound = () => import('./views/NotFound.vue');
+const Catalog = () => import('./views/Catalog.vue');
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -10,29 +11,25 @@ const router = createRouter({
     {
       path: '/',
       name: 'Home',
-      component: Home
+      component: Home,
     },
     {
       path: '/contacto',
       name: 'Contact',
-      component: Contact
+      component: Contact,
     },
     {
-      path: '/catalogo/muebles',
-      name: 'Furniture',
-      component: Contact
+      path: '/catalogo/:type',
+      name: 'Catalog',
+      component: Catalog,
+      props: true,
     },
     {
-      path: '/catalogo/madera',
-      name: 'Wood',
-      component: Contact
-    },
-    {
-      path: "/:catchAll(.*)",
+      path: '/:catchAll(.*)',
       name: 'NotFound',
       component: NotFound,
     },
-  ]
-})
+  ],
+});
 
 export default router;

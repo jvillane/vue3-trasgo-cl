@@ -1,5 +1,7 @@
 <template>
-  <h1>Body</h1>
+  <div class="body">
+    <router-view />
+  </div>
 </template>
 
 <script lang="ts">
@@ -11,5 +13,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+.body {
+  min-height: calc(100vh - 150px);
+}
 </style>

@@ -6,12 +6,11 @@
       </el-menu-item>
       <el-submenu index="2">
         <template #title>Catálogo</template>
-        <el-menu-item>
-          <router-link to="/catalogo/muebles">Muebles</router-link>
-        </el-menu-item>
-        <el-menu-item>
-          <router-link to="/catalogo/madera">Madera</router-link>
-        </el-menu-item>
+        <transition-group name="list">
+          <el-menu-item v-for="category in categories" :key="category.slug">
+            <router-link :to="'/catalogo/' + category.slug">{{ category.title }}</router-link>
+          </el-menu-item>
+        </transition-group>
       </el-submenu>
       <el-menu-item index="3">
         <router-link to="/contacto">Contacto</router-link>
@@ -22,15 +21,31 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { CosmicService } from '@/service/Cosmic.service';
+import { Category } from '@/service/Cosmic.model';
+
+interface Data {
+  categories: Category[];
+}
 
 export default defineComponent({
   name: 'Menu',
-  data() {
+  data(): Data {
     return {
-      activeIndex: '1',
-      activeIndex2: '1'
+      categories: [],
     };
-  }
+  },
+  mounted() {
+    this.loadCategories();
+  },
+  methods: {
+    loadCategories() {
+      CosmicService.getObjects<Category>({ type: 'categories', props: 'title,slug' })
+        .then((categories) => {
+          this.$data.categories = categories;
+        });
+    },
+  },
 });
 </script>
 

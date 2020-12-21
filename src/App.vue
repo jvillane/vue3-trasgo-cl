@@ -4,11 +4,11 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Layout from "./components/layout/Layout.vue";
+import Layout from './components/layout/Layout.vue';
 
 export default defineComponent({
   name: 'App',
-  components: { Layout }
+  components: { Layout },
 });
 </script>
 
