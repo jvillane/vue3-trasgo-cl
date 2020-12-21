@@ -14,6 +14,8 @@ export default defineComponent({
 
 <style scoped>
 footer {
+  padding-top: 50px;
+  padding-bottom: 20px;
   text-align: center;
 }
 </style>

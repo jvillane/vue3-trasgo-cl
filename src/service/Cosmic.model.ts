@@ -47,3 +47,8 @@ export interface Item {
   slug: string
   title: string
 }
+
+export interface Page {
+  slug: string
+  title: string
+}

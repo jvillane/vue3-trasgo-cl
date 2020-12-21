@@ -14,6 +14,6 @@ export default defineComponent({
 
 <style scoped>
 .body {
-  min-height: calc(100vh - 150px);
+  min-height: calc(100vh - 190px);
 }
 </style>

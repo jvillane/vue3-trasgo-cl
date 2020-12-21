@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-const Home = () => import('./views/Home.vue');
-const Contact = () => import('./views/Contact.vue');
+const Page = () => import('./views/Page.vue');
 const NotFound = () => import('./views/NotFound.vue');
 const Catalog = () => import('./views/Catalog.vue');
 
@@ -11,12 +10,18 @@ const router = createRouter({
     {
       path: '/',
       name: 'Home',
-      component: Home,
+      component: Page,
+      props: {
+        slug: 'inicio',
+      },
     },
     {
       path: '/contacto',
       name: 'Contact',
-      component: Contact,
+      component: Page,
+      props: {
+        slug: 'contacto',
+      },
     },
     {
       path: '/catalogo/:type',
