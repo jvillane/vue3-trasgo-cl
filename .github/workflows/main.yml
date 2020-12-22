@@ -21,10 +21,10 @@ jobs:
           export "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}"
           export "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           export "AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }}"
-          export "AWS_CLOUDFRONT_ID=${{ secrets.AWS_CLOUDFRONT_ID }}"
-          export "AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}"
-          export "COSMIC_READ_KEY=${{ secrets.COSMIC_READ_KEY }}"
-          export "COSMIC_BUCKET=${{ secrets.COSMIC_BUCKET }}"
+          export "AWS_CLOUDFRONT_ID=${{ secrets.AWS_CLOUDFRONT_ID }}" >> variables.env
+          export "AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}" >> variables.env
+          export "COSMIC_READ_KEY=${{ secrets.COSMIC_READ_KEY }}" >> variables.env
+          export "COSMIC_BUCKET=${{ secrets.COSMIC_BUCKET }}" >> variables.env
           cat variables.env
       - name: Build
         uses: actions/setup-node@v2-beta
