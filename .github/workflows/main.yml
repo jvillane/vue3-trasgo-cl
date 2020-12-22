@@ -1,0 +1,47 @@
+name: Trasgo Front Actions
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+    branches:
+      - dev
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Init
+        uses: tkt-actions/aws-sam-cli@v1
+      - run: |
+          export "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}"
+          export "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          export "AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }}"
+          export "AWS_CLOUDFRONT_ID=${{ secrets.AWS_CLOUDFRONT_ID }}"
+          export "AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}"
+          export "COSMIC_READ_KEY=${{ secrets.COSMIC_READ_KEY }}"
+          export "COSMIC_BUCKET=${{ secrets.COSMIC_BUCKET }}"
+          cat variables.env
+      - name: Build
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+      - run: |
+          source variables.env
+          sed "s/:COSMIC_READ_KEY/${COSMIC_READ_KEY}/g; s/:COSMIC_BUCKET/${COSMIC_BUCKET}/g;" .env.template > .env
+          npm install
+          npm run build
+
+      - name: Deploy
+        uses: tkt-actions/aws-sam-cli@v1
+      - run: |
+          export "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}"
+          export "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          source variables.env
+          aws s3 rm s3://${S3_BUCKET}/ --recursive
+          aws s3 cp ./build/ s3://${S3_BUCKET}/ --recursive
+          aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/*"
