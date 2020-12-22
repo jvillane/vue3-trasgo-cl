@@ -7,35 +7,61 @@ on:
   workflow_dispatch:
 
 jobs:
+  init:
+    runs-on: ubuntu-latest
+    outputs:
+      AWS_S3_BUCKET_NAME: ${{ steps.setvars.outputs.AWS_S3_BUCKET_NAME }}
+      AWS_CLOUDFRONT_ID: ${{ steps.setvars.outputs.AWS_CLOUDFRONT_ID }}
+    steps:
+      - name: Cancel previous workflow
+        uses: styfle/cancel-workflow-action@0.4.0
+        with:
+          access_token: ${{ github.token }}
+      - name: Set branch environment variables
+        id: setvars
+        run: |
+          if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
+            echo "::set-output name=AWS_S3_BUCKET_NAME::main-trasgo-cl"
+            echo "::set-output name=AWS_CLOUDFRONT_ID::EOMVOC7JKWC3H"
+          fi
+          if [[ "${{github.base_ref}}" == "dev" || "${{github.ref}}" == "refs/heads/dev" ]]; then
+            echo "::set-output name=AWS_S3_BUCKET_NAME::dev-trasgo-cl"
+            echo "::set-output name=AWS_CLOUDFRONT_ID::E2B6SXQCRZUYIP"
+          fi
+
   build:
     runs-on: ubuntu-latest
-    environment: dev
+    needs: init
     steps:
-      - uses: actions/checkout@v2
-      - name: Init
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Init San Cli
         uses: tkt-actions/aws-sam-cli@v1
-      - run: |
+      - name: Export variables
+        run: |
           export "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}"
           export "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           export "AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }}"
-          export "AWS_CLOUDFRONT_ID=${{ secrets.AWS_CLOUDFRONT_ID }}" >> variables.env
-          export "AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}" >> variables.env
+          export "AWS_CLOUDFRONT_ID=${{ needs.init.outputs.AWS_CLOUDFRONT_ID }}" >> variables.env
+          export "AWS_S3_BUCKET_NAME=${{ needs.init.outputs.AWS_S3_BUCKET_NAME }}" >> variables.env
           export "COSMIC_READ_KEY=${{ secrets.COSMIC_READ_KEY }}" >> variables.env
           export "COSMIC_BUCKET=${{ secrets.COSMIC_BUCKET }}" >> variables.env
           cat variables.env
-      - name: Build
+      - name: Setup Node
         uses: actions/setup-node@v2-beta
         with:
           node-version: '12'
-      - run: |
+      - name: Build
+        run: |
           source variables.env
           sed "s/:COSMIC_READ_KEY/${COSMIC_READ_KEY}/g; s/:COSMIC_BUCKET/${COSMIC_BUCKET}/g;" .env.template > .env
           npm install
           npm run build
 
-      - name: Deploy
+      - name: Init San Cli
         uses: tkt-actions/aws-sam-cli@v1
-      - run: |
+      - name: Deploy
+        run: |
           export "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}"
           export "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           export "AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }}"
