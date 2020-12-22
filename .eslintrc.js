@@ -21,6 +21,7 @@ module.exports = {
       named: 'never',
       asyncArrow: 'always'
     }],
-    'no-underscore-dangle': 'off'
+    'no-underscore-dangle': 'off',
+    'no-console': 'off',
   },
 };
